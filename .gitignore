@@ -1,0 +1,171 @@
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Frontend (Angular/Node.js)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/*.log
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Backend (Spring Boot/Maven)
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/.mvn/wrapper/maven-wrapper.properties
+backend/*.log
+backend/.env
+backend/src/main/resources/application-*.properties
+backend/src/main/resources/application-*.yml
+
+# Python (Liveness Model)
+liveness-model/__pycache__/
+liveness-model/*.py[cod]
+liveness-model/*$py.class
+liveness-model/*.so
+liveness-model/.Python
+liveness-model/env/
+liveness-model/venv/
+liveness-model/ENV/
+liveness-model/.env
+liveness-model/.venv
+liveness-model/pip-log.txt
+liveness-model/pip-delete-this-directory.txt
+liveness-model/.pytest_cache/
+
+# Uploaded Files and Temporary Data
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/temp-videos/*
+!backend/temp-videos/.gitkeep
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Compiled Files
+*.class
+*.jar
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# Package Files
+*.tar.gz
+*.zip
+*.rar
+
+# Build Outputs
+build/
+dist/
+out/
+
+# Configuration Files with Sensitive Data
+**/application-prod.properties
+**/application-dev.properties
+**/.env
+**/.env.local
+**/.env.production
+
+# Machine Learning Model Files (downloaded by conda_install.sh)
+liveness-model/shape_predictor_68_face_landmarks.dat
+liveness-model/shape_predictor_68_face_landmarks.dat.bz2.*
+liveness-model/*.model
+liveness-model/*.pkl
+
+# Backup Files
+*.bak
+*.backup
+*.tmp
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Maven
+**/mvnw
+**/mvnw.cmd
+**/.mvn/wrapper/maven-wrapper.jar
+**/.mvn/wrapper/maven-wrapper.properties
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Spring Boot
+**/HELP.md
+
+# JetBrains
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+.metadata
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
