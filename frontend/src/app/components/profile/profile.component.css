@@ -1,0 +1,88 @@
+.verification-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.video-stream {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.verification-active {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.instructions {
+  margin: 20px 0;
+}
+
+.instructions h3 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress {
+  height: 100%;
+  background-color: #28a745;
+  transition: width 0.3s ease;
+}
+
+.verify-btn, .stop-btn, .reset-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.verify-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.stop-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.reset-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.verification-result {
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.failure {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}

@@ -1,0 +1,42 @@
+<div class="verification-container">
+  <h2>Liveness Verification</h2>
+
+  <div *ngIf="!isVerifying && !verificationComplete">
+    <button (click)="startVerification()" class="verify-btn">
+      Start Verification Process
+    </button>
+  </div>
+
+  <div *ngIf="isVerifying" class="verification-active">
+    <video #videoElement autoplay muted class="video-stream"></video>
+
+    <div class="instructions">
+      <h3>{{ currentInstruction.title }}</h3>
+      <p>{{ currentInstruction.description }}</p>
+      <div class="progress-bar">
+        <div class="progress" [style.width.%]="progressPercentage"></div>
+      </div>
+      <p>Step {{ currentStep + 1 }} of {{ verificationSteps.length }}</p>
+    </div>
+
+    <div class="controls">
+      <button (click)="stopVerification()" class="stop-btn">
+        Stop Verification
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="verificationComplete" class="verification-result">
+    <div [class]="verificationSuccess ? 'success' : 'failure'">
+      <h3>
+        {{
+          verificationSuccess
+            ? "Verification Successful!"
+            : "Verification Failed"
+        }}
+      </h3>
+      <p>{{ verificationMessage }}</p>
+      <button (click)="resetVerification()" class="reset-btn">Try Again</button>
+    </div>
+  </div>
+</div>
