@@ -1,42 +1,194 @@
-<div class="verification-container">
-  <h2>Liveness Verification</h2>
-
-  <div *ngIf="!isVerifying && !verificationComplete">
-    <button (click)="startVerification()" class="verify-btn">
-      Start Verification Process
-    </button>
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Pensioner Verification Profile</h1>
+    <p class="subtitle">
+      Complete your identity verification for pension benefits
+    </p>
   </div>
 
-  <div *ngIf="isVerifying" class="verification-active">
-    <video #videoElement autoplay muted class="video-stream"></video>
-
-    <div class="instructions">
-      <h3>{{ currentInstruction.title }}</h3>
-      <p>{{ currentInstruction.description }}</p>
-      <div class="progress-bar">
-        <div class="progress" [style.width.%]="progressPercentage"></div>
+  <!-- Profile Picture Section -->
+  <div class="profile-section">
+    <h2>📸 Profile Picture</h2>
+    <div class="profile-picture-container">
+      <div class="profile-picture-status" *ngIf="hasProfilePicture">
+        <div class="status-indicator success">
+          <span class="status-icon">✅</span>
+          <span class="status-text">Profile picture uploaded</span>
+        </div>
       </div>
-      <p>Step {{ currentStep + 1 }} of {{ verificationSteps.length }}</p>
-    </div>
 
-    <div class="controls">
-      <button (click)="stopVerification()" class="stop-btn">
-        Stop Verification
-      </button>
+      <div class="profile-upload-section" *ngIf="!hasProfilePicture">
+        <div class="upload-instructions">
+          <p>Upload a clear photo of your face for verification:</p>
+          <ul>
+            <li>Face should be clearly visible</li>
+            <li>Good lighting conditions</li>
+            <li>No sunglasses or face coverings</li>
+            <li>Maximum file size: 10MB</li>
+          </ul>
+        </div>
+
+        <div class="file-upload-container">
+          <input
+            type="file"
+            class="file-input"
+            id="profileImageInput"
+            accept="image/*"
+            #profileImageInput
+            (change)="onProfileImageSelect($event)"
+          />
+          <label for="profileImageInput" class="file-upload-label">
+            <span class="upload-icon">📁</span>
+            Choose Image File
+          </label>
+        </div>
+
+        <div class="preview-container" *ngIf="profilePreviewUrl">
+          <img
+            [src]="profilePreviewUrl"
+            alt="Profile preview"
+            class="profile-preview"
+          />
+        </div>
+
+        <button
+          class="btn btn-primary upload-btn"
+          (click)="uploadProfilePicture()"
+          [disabled]="!selectedProfileFile || isUploadingProfile"
+        >
+          <span class="loading-spinner" *ngIf="isUploadingProfile">⏳</span>
+          {{ isUploadingProfile ? "Uploading..." : "Upload Profile Picture" }}
+        </button>
+
+        <div class="upload-message success" *ngIf="profileUploadMessage">
+          {{ profileUploadMessage }}
+        </div>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="verificationComplete" class="verification-result">
-    <div [class]="verificationSuccess ? 'success' : 'failure'">
-      <h3>
-        {{
-          verificationSuccess
-            ? "Verification Successful!"
-            : "Verification Failed"
-        }}
-      </h3>
-      <p>{{ verificationMessage }}</p>
-      <button (click)="resetVerification()" class="reset-btn">Try Again</button>
+  <!-- Liveness Verification Section -->
+  <div class="profile-section">
+    <h2>🎥 Liveness Verification</h2>
+
+    <div class="verification-requirements" *ngIf="!hasProfilePicture">
+      <div class="requirement-notice">
+        <span class="warning-icon">⚠️</span>
+        <p>
+          Please upload a profile picture before starting liveness verification.
+        </p>
+      </div>
+    </div>
+
+    <div class="verification-container">
+      <!-- Verification Instructions -->
+      <div
+        class="verification-instructions"
+        *ngIf="!isVerifying && !verificationComplete"
+      >
+        <div class="instructions-header">
+          <h3>Verification Instructions</h3>
+          <p>Follow these steps during the 15-second recording:</p>
+        </div>
+
+        <div class="steps-container">
+          <div
+            class="step-item"
+            *ngFor="let step of verificationSteps; let i = index"
+          >
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-content">
+              <h4>{{ step.title }}</h4>
+              <p>{{ step.description }}</p>
+              <span class="step-duration">{{ step.duration }} seconds</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="verification-controls">
+          <button
+            class="btn btn-primary verification-btn"
+            (click)="startVerification()"
+            [disabled]="!hasProfilePicture"
+          >
+            <span class="btn-icon">🚀</span>
+            Start Verification
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Verification -->
+      <div
+        class="active-verification"
+        *ngIf="isVerifying && !verificationComplete"
+      >
+        <div class="verification-header">
+          <h3>Verification in Progress</h3>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="progressPercentage"
+              ></div>
+            </div>
+            <span class="progress-text"
+              >{{ progressPercentage | number : "1.0-0" }}%</span
+            >
+          </div>
+        </div>
+
+        <div class="video-container">
+          <video
+            class="verification-video"
+            autoplay
+            muted
+            playsinline
+            #videoElement
+          ></video>
+          <div class="video-overlay">
+            <div class="face-guide"></div>
+          </div>
+        </div>
+
+        <div class="current-instruction">
+          <div class="instruction-step">
+            <span class="step-indicator"
+              >Step {{ currentStep + 1 }} of
+              {{ verificationSteps.length }}</span
+            >
+            <h4>{{ currentInstruction.title }}</h4>
+            <p>{{ currentInstruction.description }}</p>
+          </div>
+        </div>
+
+        <div class="verification-controls">
+          <button class="btn btn-secondary" (click)="stopVerification()">
+            <span class="btn-icon">⏹️</span>
+            Stop Verification
+          </button>
+        </div>
+      </div>
+
+      <!-- Verification Results -->
+      <div class="verification-results" *ngIf="verificationComplete">
+        <div
+          class="result-status"
+          [class.success]="verificationSuccess"
+          [class.failed]="!verificationSuccess"
+        >
+          <span class="status-icon">{{
+            verificationSuccess ? "✅" : "❌"
+          }}</span>
+          <span>{{ verificationMessage }}</span>
+        </div>
+        <p *ngIf="verificationSuccess">
+          Your identity has been successfully verified. You can now proceed with
+          your pension application.
+        </p>
+        <p *ngIf="!verificationSuccess">
+          Please try the verification process again.
+        </p>
+      </div>
     </div>
   </div>
 </div>

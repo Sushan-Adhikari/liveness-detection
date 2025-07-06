@@ -1,21 +1,28 @@
 package com.example.pensionerverification.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.Date;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users") // Use "users" as "user" is a reserved keyword in PostgreSQL
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    // Path to a stored reference profile picture (optional for this flow, but good
+    // to have)
     private String profilePicturePath;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastVerificationDate;
 
     // Getters and Setters
     public Long getId() {
@@ -48,5 +55,13 @@ public class User {
 
     public void setProfilePicturePath(String profilePicturePath) {
         this.profilePicturePath = profilePicturePath;
+    }
+
+    public Date getLastVerificationDate() {
+        return lastVerificationDate;
+    }
+
+    public void setLastVerificationDate(Date lastVerificationDate) {
+        this.lastVerificationDate = lastVerificationDate;
     }
 }
