@@ -59,22 +59,22 @@ export class ProfileComponent implements OnDestroy {
     {
       title: 'Look at the camera',
       description: 'Position your face in the center of the screen and look directly at the camera.',
-      duration: 3
+      duration: 1
     },
     {
       title: 'Blink naturally',
       description: 'Please blink your eyes 2-3 times clearly during the recording.',
-      duration: 5
+      duration: 2
     },
-    {
-      title: 'Turn your head slowly',
-      description: 'Slowly turn your head left, then right, then return to center.',
-      duration: 5
-    },
+    // {
+    //   title: 'Turn your head slowly',
+    //   description: 'Slowly turn your head left, then right, then return to center.',
+    //   duration: 5
+    // },
     {
       title: 'Final verification',
       description: 'Hold still while we complete the recording. Almost done!',
-      duration: 2
+      duration: 1
     }
   ];
 

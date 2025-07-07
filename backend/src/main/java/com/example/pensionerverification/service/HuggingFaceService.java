@@ -99,6 +99,45 @@ public class HuggingFaceService {
         }
     }
 
+    // private LivenessVerificationResult callHuggingFaceAPI(String
+    // profileImagePath, String videoPath) throws IOException {
+    // try {
+    // // Prepare the API request
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    // // Add HuggingFace token if available
+    // if (huggingFaceToken != null && !huggingFaceToken.isEmpty()) {
+    // headers.setBearerAuth(huggingFaceToken);
+    // }
+
+    // MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+    // // Add profile image file
+    // body.add("profile_image", new FileSystemResource(profileImagePath));
+
+    // // Add video file with the correct structure expected by the API
+    // Map<String, Object> videoData = new HashMap<>();
+    // videoData.put("video", new FileSystemResource(videoPath));
+    // videoData.put("subtitles", null); // No subtitles
+    // body.add("video_file", videoData);
+
+    // HttpEntity<MultiValueMap<String, Object>> requestEntity = new
+    // HttpEntity<>(body, headers);
+
+    // // Make the API call to the predict endpoint
+    // String apiEndpoint = huggingFaceApiUrl + "/call/predict";
+    // ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint,
+    // requestEntity, String.class);
+
+    // // Parse response
+    // return parseHuggingFaceResponse(response.getBody());
+
+    // } catch (Exception e) {
+    // // Try alternative approach with direct file upload
+    // return callHuggingFaceAPIAlternative(profileImagePath, videoPath);
+    // }
+    // }
     private LivenessVerificationResult callHuggingFaceAPI(String profileImagePath, String videoPath)
             throws IOException {
         try {
@@ -113,56 +152,118 @@ public class HuggingFaceService {
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
-            // Add profile image file
+            // Add profile image - direct file upload
             body.add("profile_image", new FileSystemResource(profileImagePath));
 
-            // Add video file with the correct structure expected by the API
-            Map<String, Object> videoData = new HashMap<>();
-            videoData.put("video", new FileSystemResource(videoPath));
-            videoData.put("subtitles", null); // No subtitles
-            body.add("video_file", videoData);
+            // Add video file in the expected format
+            body.add("video_file", new FileSystemResource(videoPath));
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Make the API call to the predict endpoint
-            String apiEndpoint = huggingFaceApiUrl + "/call/predict";
+            // Use the correct API endpoint
+            String apiEndpoint = huggingFaceApiUrl + "/predict";
+
             ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint, requestEntity, String.class);
 
             // Parse response
             return parseHuggingFaceResponse(response.getBody());
 
         } catch (Exception e) {
-            // Try alternative approach with direct file upload
-            return callHuggingFaceAPIAlternative(profileImagePath, videoPath);
-        }
-    }
-
-    private LivenessVerificationResult callHuggingFaceAPIAlternative(String profileImagePath, String videoPath)
-            throws IOException {
-        try {
-            // Alternative approach: use the direct API endpoint format
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            if (huggingFaceToken != null && !huggingFaceToken.isEmpty()) {
-                headers.setBearerAuth(huggingFaceToken);
-            }
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("data", "[\"" + profileImagePath + "\", {\"video\": \"" + videoPath + "\", \"subtitles\": null}]");
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // Try the API endpoint
-            String apiEndpoint = huggingFaceApiUrl + "/api/predict";
-            ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint, requestEntity, String.class);
-
-            return parseHuggingFaceResponse(response.getBody());
-
-        } catch (Exception e) {
             throw new IOException("Failed to call HuggingFace API: " + e.getMessage(), e);
         }
     }
+
+    // private LivenessVerificationResult callHuggingFaceAPIAlternative(String
+    // profileImagePath, String videoPath)
+    // throws IOException {
+    // try {
+    // // Alternative approach: use the direct API endpoint format
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    // if (huggingFaceToken != null && !huggingFaceToken.isEmpty()) {
+    // headers.setBearerAuth(huggingFaceToken);
+    // }
+
+    // MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    // body.add("data", "[\"" + profileImagePath + "\", {\"video\": \"" + videoPath
+    // + "\", \"subtitles\": null}]");
+
+    // HttpEntity<MultiValueMap<String, Object>> requestEntity = new
+    // HttpEntity<>(body, headers);
+
+    // // Try the API endpoint
+    // String apiEndpoint = huggingFaceApiUrl + "/api/predict";
+    // ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint,
+    // requestEntity, String.class);
+
+    // return parseHuggingFaceResponse(response.getBody());
+
+    // } catch (Exception e) {
+    // throw new IOException("Failed to call HuggingFace API: " + e.getMessage(),
+    // e);
+    // }
+    // }
+
+    // private LivenessVerificationResult parseHuggingFaceResponse(String
+    // responseBody) throws IOException {
+    // try {
+    // JsonNode jsonResponse = objectMapper.readTree(responseBody);
+
+    // // Initialize default values
+    // boolean isVerified = false;
+    // double confidence = 0.0;
+    // String reason = "Verification completed";
+    // Map<String, Object> details = new HashMap<>();
+
+    // // Check if response is in the expected format
+    // if (jsonResponse.has("data") && jsonResponse.get("data").isArray()) {
+    // JsonNode dataArray = jsonResponse.get("data");
+    // if (dataArray.size() >= 2) {
+    // String markdownResult = dataArray.get(0).asText();
+    // JsonNode jsonDetails = dataArray.get(1);
+
+    // // Parse the markdown result
+    // isVerified = parseVerificationStatus(markdownResult);
+    // reason = extractReasonFromMarkdown(markdownResult);
+
+    // // Extract details from JSON
+    // if (jsonDetails != null && !jsonDetails.isNull()) {
+    // details = parseJsonDetails(jsonDetails);
+    // confidence = extractConfidence(jsonDetails);
+    // }
+
+    // // Add the full markdown result to details
+    // details.put("fullResult", markdownResult);
+    // }
+    // } else if (jsonResponse.isArray() && jsonResponse.size() >= 2) {
+    // // Direct array response format
+    // String markdownResult = jsonResponse.get(0).asText();
+    // JsonNode jsonDetails = jsonResponse.get(1);
+
+    // isVerified = parseVerificationStatus(markdownResult);
+    // reason = extractReasonFromMarkdown(markdownResult);
+
+    // if (jsonDetails != null && !jsonDetails.isNull()) {
+    // details = parseJsonDetails(jsonDetails);
+    // confidence = extractConfidence(jsonDetails);
+    // }
+
+    // details.put("fullResult", markdownResult);
+    // } else {
+    // // Fallback for unexpected format
+    // details.put("rawResponse", responseBody);
+    // reason = "Unexpected response format";
+    // }
+
+    // return new LivenessVerificationResult(isVerified, confidence, reason,
+    // details);
+
+    // } catch (Exception e) {
+    // throw new IOException("Failed to parse HuggingFace response: " +
+    // e.getMessage(), e);
+    // }
+    // }
 
     private LivenessVerificationResult parseHuggingFaceResponse(String responseBody) throws IOException {
         try {
@@ -174,40 +275,24 @@ public class HuggingFaceService {
             String reason = "Verification completed";
             Map<String, Object> details = new HashMap<>();
 
-            // Check if response is in the expected format
-            if (jsonResponse.has("data") && jsonResponse.get("data").isArray()) {
-                JsonNode dataArray = jsonResponse.get("data");
-                if (dataArray.size() >= 2) {
-                    String markdownResult = dataArray.get(0).asText();
-                    JsonNode jsonDetails = dataArray.get(1);
-
-                    // Parse the markdown result
-                    isVerified = parseVerificationStatus(markdownResult);
-                    reason = extractReasonFromMarkdown(markdownResult);
-
-                    // Extract details from JSON
-                    if (jsonDetails != null && !jsonDetails.isNull()) {
-                        details = parseJsonDetails(jsonDetails);
-                        confidence = extractConfidence(jsonDetails);
-                    }
-
-                    // Add the full markdown result to details
-                    details.put("fullResult", markdownResult);
-                }
-            } else if (jsonResponse.isArray() && jsonResponse.size() >= 2) {
-                // Direct array response format
+            // Gradio returns an array with [markdown_result, json_details]
+            if (jsonResponse.isArray() && jsonResponse.size() >= 2) {
                 String markdownResult = jsonResponse.get(0).asText();
                 JsonNode jsonDetails = jsonResponse.get(1);
 
+                // Parse the markdown result for verification status
                 isVerified = parseVerificationStatus(markdownResult);
                 reason = extractReasonFromMarkdown(markdownResult);
 
+                // Extract details from JSON
                 if (jsonDetails != null && !jsonDetails.isNull()) {
                     details = parseJsonDetails(jsonDetails);
-                    confidence = extractConfidence(jsonDetails);
+                    confidence = extractConfidenceFromDetails(jsonDetails);
                 }
 
+                // Add the full markdown result to details
                 details.put("fullResult", markdownResult);
+
             } else {
                 // Fallback for unexpected format
                 details.put("rawResponse", responseBody);
@@ -221,30 +306,86 @@ public class HuggingFaceService {
         }
     }
 
+    private double extractConfidenceFromDetails(JsonNode jsonDetails) {
+        if (jsonDetails == null)
+            return 0.0;
+
+        try {
+            // Look for confidence in the liveness result structure
+            if (jsonDetails.has("confidence")) {
+                return jsonDetails.get("confidence").asDouble();
+            }
+
+            // If it's the full liveness result object
+            if (jsonDetails.has("is_live") && jsonDetails.has("confidence")) {
+                return jsonDetails.get("confidence").asDouble();
+            }
+
+            // Look in nested details
+            if (jsonDetails.has("details")) {
+                JsonNode details = jsonDetails.get("details");
+                if (details.has("confidence")) {
+                    return details.get("confidence").asDouble();
+                }
+            }
+
+            return 0.0;
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    // private boolean parseVerificationStatus(String markdownResult) {
+    // if (markdownResult == null)
+    // return false;
+
+    // // Check for verification success indicators
+    // return markdownResult.contains("✅ VERIFIED - GENUINE PERSON") ||
+    // markdownResult.contains("VERIFIED") ||
+    // markdownResult.contains("GENUINE");
+    // }
+
     private boolean parseVerificationStatus(String markdownResult) {
         if (markdownResult == null)
             return false;
 
-        // Check for verification success indicators
+        // Check for verification success indicators from your Gradio app
         return markdownResult.contains("✅ VERIFIED - GENUINE PERSON") ||
                 markdownResult.contains("VERIFIED") ||
-                markdownResult.contains("GENUINE");
+                markdownResult.contains("IDENTITY CONFIRMED");
     }
 
     private String extractReasonFromMarkdown(String markdownResult) {
         if (markdownResult == null)
             return "No result";
 
-        if (markdownResult.contains("❌ VERIFICATION FAILED")) {
-            return "Verification failed - please try again";
+        if (markdownResult.contains("✅ VERIFIED - GENUINE PERSON")) {
+            return "Verification successful - genuine person and identity confirmed";
+        } else if (markdownResult.contains("❌ VERIFICATION FAILED")) {
+            return "Verification failed - please try again with a clear video";
         } else if (markdownResult.contains("❌ SPOOFING SUSPECTED")) {
-            return "Spoofing detected - please ensure you are a real person";
-        } else if (markdownResult.contains("✅ VERIFIED")) {
-            return "Verification successful - genuine person detected";
+            return "Spoofing detected - please ensure you are recording a live video";
+        } else if (markdownResult.contains("❌ IDENTITY MISMATCH")) {
+            return "Identity mismatch - person in video doesn't match profile picture";
         } else {
             return "Verification completed";
         }
     }
+
+    // private String extractReasonFromMarkdown(String markdownResult) {
+    // if (markdownResult == null)
+    // return "No result";
+
+    // if (markdownResult.contains("❌ VERIFICATION FAILED")) {
+    // return "Verification failed - please try again";
+    // } else if (markdownResult.contains("❌ SPOOFING SUSPECTED")) {
+    // return "Spoofing detected - please ensure you are a real person";
+    // } else if (markdownResult.contains("✅ VERIFIED")) {
+    // return "Verification successful - genuine person detected";
+    // } else {
+    // return "Verification completed";
+    // }
+    // }
 
     private double extractConfidence(JsonNode jsonDetails) {
         if (jsonDetails == null)
